@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>SimpleSqlServerMcp.WindowsInstaller.Tests</AssemblyName>
+    <RootNamespace>SimpleSqlServerMcp.WindowsInstaller.Tests</RootNamespace>
+    <TargetFramework>net8.0-windows</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SimpleSqlServerMcp.WindowsInstaller\SimpleSqlServerMcp.WindowsInstaller.csproj" />
+  </ItemGroup>
+
+</Project>

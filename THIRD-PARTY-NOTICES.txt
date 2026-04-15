@@ -1,0 +1,42 @@
+Simple SQL Server MCP
+Third-Party Notices
+
+This distribution includes third-party components. The list below covers the
+direct NuGet packages referenced by the application and installer projects in
+this repository.
+
+This project is distributed under the MIT License. See LICENSE for the project
+license text.
+
+Direct package dependencies
+
+1. Microsoft.Data.SqlClient 7.0.0
+License: MIT
+Source: https://www.nuget.org/packages/Microsoft.Data.SqlClient/7.0.0
+
+2. Microsoft.Extensions.Hosting 10.0.5
+License: MIT
+Source: https://www.nuget.org/packages/Microsoft.Extensions.Hosting/10.0.5
+
+3. Microsoft.SqlServer.TransactSql.ScriptDom 170.191.0
+License: MIT
+Source: https://www.nuget.org/packages/Microsoft.SqlServer.TransactSql.ScriptDom/170.191.0
+
+4. ModelContextProtocol 1.2.0
+License: Apache-2.0
+Source: https://www.nuget.org/packages/ModelContextProtocol/1.2.0
+
+5. YamlDotNet 16.3.0
+License: MIT
+Source: https://www.nuget.org/packages/YamlDotNet/16.3.0
+
+6. Tomlyn 1.2.0
+License: BSD-2-Clause
+Source: https://www.nuget.org/packages/Tomlyn/1.2.0
+
+Notes
+
+- Self-contained Windows builds may also bundle transitive dependencies from
+  the .NET runtime and the package graph produced by `dotnet publish`.
+- If you need a complete bill of materials for a release build, generate it
+  from the publish output used to produce that installer.

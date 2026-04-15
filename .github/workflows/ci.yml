@@ -1,0 +1,142 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  verify-master-tag:
+    name: Verify tag commit is on master
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Verify tagged commit is reachable from origin/master
+        shell: bash
+        run: |
+          git fetch origin master --no-tags
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" "origin/master"; then
+            echo "Tag ${GITHUB_REF_NAME} does not point to a commit on origin/master." >&2
+            exit 1
+          fi
+
+  runtime:
+    name: Runtime Build & Test
+    runs-on: ubuntu-latest
+    needs: verify-master-tag
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore runtime projects
+        run: |
+          dotnet restore tests/SimpleSqlServerMcp.UnitTests/SimpleSqlServerMcp.UnitTests.csproj
+          dotnet restore tests/SimpleSqlServerMcp.IntegrationTests/SimpleSqlServerMcp.IntegrationTests.csproj
+
+      - name: Build runtime test projects
+        run: |
+          dotnet build tests/SimpleSqlServerMcp.UnitTests/SimpleSqlServerMcp.UnitTests.csproj --configuration Release --no-restore
+          dotnet build tests/SimpleSqlServerMcp.IntegrationTests/SimpleSqlServerMcp.IntegrationTests.csproj --configuration Release --no-restore
+
+      - name: Run runtime unit tests
+        run: dotnet test tests/SimpleSqlServerMcp.UnitTests/SimpleSqlServerMcp.UnitTests.csproj --configuration Release --no-build -m:1
+
+      - name: Run integration tests
+        run: dotnet test tests/SimpleSqlServerMcp.IntegrationTests/SimpleSqlServerMcp.IntegrationTests.csproj --configuration Release --no-build -m:1
+
+      - name: Build Linux runtime source artifact
+        run: |
+          mkdir -p dist/simple-sqlserver-mcp-runtime-source/src
+          cp -R src/SimpleSqlServerMcp dist/simple-sqlserver-mcp-runtime-source/src/
+          cp LICENSE dist/simple-sqlserver-mcp-runtime-source/
+          cp THIRD-PARTY-NOTICES.txt dist/simple-sqlserver-mcp-runtime-source/
+          (
+            cd dist/simple-sqlserver-mcp-runtime-source
+            zip -qr ../simple-sqlserver-mcp-runtime-source.zip .
+          )
+
+      - name: Upload Linux runtime source artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: simple-sqlserver-mcp-runtime-source
+          path: dist/simple-sqlserver-mcp-runtime-source.zip
+          if-no-files-found: error
+
+  windows-installer:
+    name: Windows Installer Build & Test
+    runs-on: windows-latest
+    needs: verify-master-tag
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore Windows installer test project
+        run: dotnet restore tests\SimpleSqlServerMcp.WindowsInstaller.Tests\SimpleSqlServerMcp.WindowsInstaller.Tests.csproj
+
+      - name: Run Windows installer tests
+        run: dotnet test tests\SimpleSqlServerMcp.WindowsInstaller.Tests\SimpleSqlServerMcp.WindowsInstaller.Tests.csproj --configuration Release -m:1
+
+      - name: Build MSI
+        run: dotnet build installer\windows\SimpleSqlServerMcp.Setup.wixproj --configuration Release -m:1
+
+      - name: Upload MSI artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: SimpleSqlServerMcp.Setup
+          path: |
+            installer/windows/output/SimpleSqlServerMcp.Setup.msi
+            installer/windows/output/SimpleSqlServerMcp.Setup.wixpdb
+          if-no-files-found: error
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs:
+      - verify-master-tag
+      - runtime
+      - windows-installer
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Linux runtime source artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: simple-sqlserver-mcp-runtime-source
+          path: release-assets/linux
+
+      - name: Download MSI artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: SimpleSqlServerMcp.Setup
+          path: release-assets/windows
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Simple SQL Server MCP ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            release-assets/linux/simple-sqlserver-mcp-runtime-source.zip
+            release-assets/windows/SimpleSqlServerMcp.Setup.msi

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>SimpleSqlServerMcp.UnitTests</AssemblyName>
+    <RootNamespace>SimpleSqlServerMcp.UnitTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SimpleSqlServerMcp\SimpleSqlServerMcp.csproj" />
+  </ItemGroup>
+
+</Project>

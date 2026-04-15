@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AssemblyName>SimpleSqlServerMcp.IntegrationTests</AssemblyName>
+    <RootNamespace>SimpleSqlServerMcp.IntegrationTests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SimpleSqlServerMcp\SimpleSqlServerMcp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Testcontainers.MsSql" Version="4.11.0" />
+  </ItemGroup>
+
+</Project>

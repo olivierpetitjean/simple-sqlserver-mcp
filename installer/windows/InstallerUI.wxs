@@ -1,0 +1,163 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <UI Id="SimpleSqlServerMcpUI">
+      <TextStyle Id="WixUI_Font_Normal" FaceName="Tahoma" Size="8" />
+      <TextStyle Id="WixUI_Font_Bigger" FaceName="Tahoma" Size="12" />
+      <TextStyle Id="WixUI_Font_Title" FaceName="Tahoma" Size="9" Bold="yes" />
+
+      <Property Id="DefaultUIFont" Value="WixUI_Font_Normal" />
+
+      <DialogRef Id="BrowseDlg" />
+      <DialogRef Id="DiskCostDlg" />
+      <DialogRef Id="ErrorDlg" />
+      <DialogRef Id="FatalError" />
+      <DialogRef Id="FilesInUse" />
+      <DialogRef Id="MsiRMFilesInUse" />
+      <DialogRef Id="PrepareDlg" />
+      <DialogRef Id="ProgressDlg" />
+      <DialogRef Id="ResumeDlg" />
+      <DialogRef Id="UserExit" />
+      <DialogRef Id="WelcomeDlg" />
+      <DialogRef Id="LicenseAgreementDlg" />
+      <DialogRef Id="InstallDirDlg" />
+      <DialogRef Id="VerifyReadyDlg" />
+      <DialogRef Id="MaintenanceWelcomeDlg" />
+      <DialogRef Id="MaintenanceTypeDlg" />
+      <DialogRef Id="ConfigureMcpDlg" />
+      <DialogRef Id="SqlServerConfigDlg" />
+      <DialogRef Id="ToolSelectionDlg" />
+
+      <Publish Dialog="ExitDialog" Control="Finish" Event="EndDialog" Value="Return" Order="999" />
+
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="LicenseAgreementDlg" Condition="NOT Installed" />
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceWelcomeDlg" Condition="Installed AND NOT PATCH" />
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Condition="Installed AND PATCH" />
+
+      <Publish Dialog="LicenseAgreementDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" />
+      <Publish Dialog="LicenseAgreementDlg" Control="Next" Event="NewDialog" Value="InstallDirDlg" Condition="LicenseAccepted = &quot;1&quot;" />
+
+      <Publish Dialog="InstallDirDlg" Control="Back" Event="NewDialog" Value="LicenseAgreementDlg" Condition="NOT Installed" />
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="CheckTargetPath" Value="[WIXUI_INSTALLDIR]" Order="1" />
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="SetTargetPath" Value="[WIXUI_INSTALLDIR]" Order="3" />
+      <Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="ConfigureMcpDlg" Order="4" Condition="NOT Installed" />
+
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Property="_BrowseProperty" Value="[WIXUI_INSTALLDIR]" Order="1" />
+      <Publish Dialog="InstallDirDlg" Control="ChangeFolder" Event="SpawnDialog" Value="BrowseDlg" Order="2" />
+
+      <Publish Dialog="BrowseDlg" Control="OK" Event="CheckTargetPath" Value="[WIXUI_INSTALLDIR]" Order="1" />
+      <Publish Dialog="BrowseDlg" Control="OK" Event="SetTargetPath" Value="[_BrowseProperty]" Order="3" />
+      <Publish Dialog="BrowseDlg" Control="OK" Event="EndDialog" Value="Return" Order="4" />
+
+      <Publish Dialog="ConfigureMcpDlg" Control="Back" Event="NewDialog" Value="InstallDirDlg" />
+      <Publish Dialog="ConfigureMcpDlg" Control="Next" Event="NewDialog" Value="SqlServerConfigDlg" Condition="CONFIGURE_SIMPLE_SQLSERVER_MCP = &quot;1&quot;" />
+      <Publish Dialog="ConfigureMcpDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" Condition="CONFIGURE_SIMPLE_SQLSERVER_MCP &lt;&gt; &quot;1&quot;" />
+
+      <Publish Dialog="SqlServerConfigDlg" Control="Back" Event="NewDialog" Value="ConfigureMcpDlg" />
+      <Publish Dialog="SqlServerConfigDlg" Control="Next" Event="DoAction" Value="DetectInstalledTools" Order="1" />
+      <Publish Dialog="SqlServerConfigDlg" Control="Next" Event="NewDialog" Value="ToolSelectionDlg" Order="2" />
+
+      <Publish Dialog="ToolSelectionDlg" Control="Back" Event="NewDialog" Value="SqlServerConfigDlg" />
+      <Publish Dialog="ToolSelectionDlg" Control="Next" Event="NewDialog" Value="VerifyReadyDlg" />
+
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="ToolSelectionDlg" Order="1" Condition="NOT Installed AND CONFIGURE_SIMPLE_SQLSERVER_MCP = &quot;1&quot;" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="ConfigureMcpDlg" Order="2" Condition="NOT Installed AND CONFIGURE_SIMPLE_SQLSERVER_MCP &lt;&gt; &quot;1&quot;" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="MaintenanceTypeDlg" Order="3" Condition="Installed AND NOT PATCH" />
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="WelcomeDlg" Order="4" Condition="Installed AND PATCH" />
+
+      <Publish Dialog="MaintenanceWelcomeDlg" Control="Next" Event="NewDialog" Value="MaintenanceTypeDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RepairButton" Event="NewDialog" Value="VerifyReadyDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="RemoveButton" Event="NewDialog" Value="VerifyReadyDlg" />
+      <Publish Dialog="MaintenanceTypeDlg" Control="Back" Event="NewDialog" Value="MaintenanceWelcomeDlg" />
+
+      <Property Id="ARPNOMODIFY" Value="1" />
+      <Property Id="ARPNOREPAIR" Value="1" />
+    </UI>
+
+    <UIRef Id="WixUI_Common" />
+  </Fragment>
+
+  <Fragment>
+    <UI>
+      <Dialog Id="ConfigureMcpDlg" Width="370" Height="270" Title="Configure Simple SQL Server MCP">
+        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="Next" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="Back" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="Cancel">
+          <Publish Event="SpawnDialog" Value="CancelDlg" />
+        </Control>
+
+        <Control Id="Title" Type="Text" X="15" Y="10" Width="320" Height="20" Transparent="yes" NoPrefix="yes" Text="Installer configuration" />
+        <Control Id="Description" Type="Text" X="20" Y="45" Width="325" Height="45" Text="Choose whether this installation should also configure Simple SQL Server MCP and register it into supported tools for the current Windows user." />
+        <Control Id="ConfigureCheckBox" Type="CheckBox" X="20" Y="105" Width="320" Height="18" Property="CONFIGURE_SIMPLE_SQLSERVER_MCP" CheckBoxValue="1" Text="Configure Simple SQL Server MCP after installation" />
+        <Control Id="Note" Type="Text" X="20" Y="132" Width="325" Height="60" NoPrefix="yes" Text="If this option is selected, the installer will ask for SQL Server connection details and the client tools that should receive the MCP registration." />
+
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
+      </Dialog>
+
+      <Dialog Id="SqlServerConfigDlg" Width="370" Height="318" Title="SQL Server Configuration">
+        <Control Id="Next" Type="PushButton" X="236" Y="291" Width="56" Height="17" Default="yes" Text="Next" />
+        <Control Id="Back" Type="PushButton" X="180" Y="291" Width="56" Height="17" Text="Back" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="291" Width="56" Height="17" Cancel="yes" Text="Cancel">
+          <Publish Event="SpawnDialog" Value="CancelDlg" />
+        </Control>
+
+        <Control Id="Title" Type="Text" X="15" Y="8" Width="320" Height="18" Transparent="yes" NoPrefix="yes" Text="SQL Server settings" />
+        <Control Id="Description" Type="Text" X="20" Y="28" Width="320" Height="20" Text="Define the SQL Server connection that the installed MCP will use." />
+
+        <Control Id="ServerNameLabel" Type="Text" X="20" Y="54" Width="115" Height="15" Text="MCP server name:" />
+        <Control Id="ServerNameEdit" Type="Edit" X="145" Y="52" Width="195" Height="18" Property="MCP_SERVER_NAME" />
+
+        <Control Id="HostLabel" Type="Text" X="20" Y="76" Width="115" Height="15" Text="SQL Server host:" />
+        <Control Id="HostEdit" Type="Edit" X="145" Y="74" Width="195" Height="18" Property="SQLSERVER_HOST" />
+
+        <Control Id="PortLabel" Type="Text" X="20" Y="98" Width="115" Height="15" Text="SQL Server port:" />
+        <Control Id="PortEdit" Type="Edit" X="145" Y="96" Width="72" Height="18" Property="SQLSERVER_PORT" />
+
+        <Control Id="DatabaseLabel" Type="Text" X="20" Y="120" Width="115" Height="15" Text="SQL Server database:" />
+        <Control Id="DatabaseEdit" Type="Edit" X="145" Y="118" Width="195" Height="18" Property="SQLSERVER_DATABASE" />
+
+        <Control Id="IntegratedSecurityCheckBox" Type="CheckBox" X="20" Y="142" Width="240" Height="18" Property="SQLSERVER_INTEGRATED_SECURITY" CheckBoxValue="1" Text="Use integrated security" />
+
+        <Control Id="UsernameLabel" Type="Text" X="20" Y="164" Width="115" Height="15" Hidden="yes" ShowCondition="SQLSERVER_INTEGRATED_SECURITY &lt;&gt; &quot;1&quot;" HideCondition="SQLSERVER_INTEGRATED_SECURITY = &quot;1&quot;" Text="SQL Server login:" />
+        <Control Id="UsernameEdit" Type="Edit" X="145" Y="162" Width="195" Height="18" Property="SQLSERVER_USERNAME" Hidden="yes" ShowCondition="SQLSERVER_INTEGRATED_SECURITY &lt;&gt; &quot;1&quot;" HideCondition="SQLSERVER_INTEGRATED_SECURITY = &quot;1&quot;" />
+
+        <Control Id="PasswordLabel" Type="Text" X="20" Y="186" Width="115" Height="15" Hidden="yes" ShowCondition="SQLSERVER_INTEGRATED_SECURITY &lt;&gt; &quot;1&quot;" HideCondition="SQLSERVER_INTEGRATED_SECURITY = &quot;1&quot;" Text="SQL Server password:" />
+        <Control Id="PasswordEdit" Type="Edit" X="145" Y="184" Width="195" Height="18" Property="SQLSERVER_PASSWORD" Password="yes" Hidden="yes" ShowCondition="SQLSERVER_INTEGRATED_SECURITY &lt;&gt; &quot;1&quot;" HideCondition="SQLSERVER_INTEGRATED_SECURITY = &quot;1&quot;" />
+
+        <Control Id="EncryptCheckBox" Type="CheckBox" X="20" Y="210" Width="240" Height="18" Property="SQLSERVER_ENCRYPT" CheckBoxValue="1" Text="Encrypt connection (TLS)" />
+        <Control Id="TrustServerCertificateCheckBox" Type="CheckBox" X="20" Y="232" Width="280" Height="18" Property="SQLSERVER_TRUST_SERVER_CERTIFICATE" CheckBoxValue="1" Text="Trust server certificate" />
+
+        <Control Id="ModeLabel" Type="Text" X="20" Y="256" Width="115" Height="15" Text="MCP mode:" />
+        <Control Id="ModeGroup" Type="RadioButtonGroup" X="145" Y="254" Width="195" Height="18" Property="MCP_SQLSERVER_MODE">
+          <RadioButtonGroup Property="MCP_SQLSERVER_MODE">
+            <RadioButton Value="read-only" X="0" Y="0" Width="90" Height="15" Text="Read-only" />
+            <RadioButton Value="mutable" X="95" Y="0" Width="70" Height="15" Text="Mutable" />
+          </RadioButtonGroup>
+        </Control>
+
+        <Control Id="BottomLine" Type="Line" X="0" Y="282" Width="370" Height="0" />
+      </Dialog>
+
+      <Dialog Id="ToolSelectionDlg" Width="370" Height="320" Title="Tool Registration">
+        <Control Id="Next" Type="PushButton" X="236" Y="293" Width="56" Height="17" Default="yes" Text="Next" />
+        <Control Id="Back" Type="PushButton" X="180" Y="293" Width="56" Height="17" Text="Back" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="293" Width="56" Height="17" Cancel="yes" Text="Cancel">
+          <Publish Event="SpawnDialog" Value="CancelDlg" />
+        </Control>
+
+        <Control Id="Title" Type="Text" X="15" Y="10" Width="320" Height="18" Transparent="yes" NoPrefix="yes" Text="Register the MCP in your tools" />
+        <Control Id="Description" Type="Text" X="20" Y="32" Width="325" Height="26" Text="Select the Windows tools that should receive the Simple SQL Server MCP registration during installation." />
+
+        <Control Id="CodexCheckBox" Type="CheckBox" X="20" Y="68" Width="250" Height="18" Property="INSTALL_TOOL_CODEX" CheckBoxValue="1" Text="Codex" />
+        <Control Id="CursorCheckBox" Type="CheckBox" X="20" Y="90" Width="250" Height="18" Property="INSTALL_TOOL_CURSOR" CheckBoxValue="1" Text="Cursor" />
+        <Control Id="GeminiCliCheckBox" Type="CheckBox" X="20" Y="112" Width="250" Height="18" Property="INSTALL_TOOL_GEMINI_CLI" CheckBoxValue="1" Text="Gemini CLI" />
+        <Control Id="CopilotCheckBox" Type="CheckBox" X="20" Y="134" Width="250" Height="18" Property="INSTALL_TOOL_GITHUB_COPILOT_CLI" CheckBoxValue="1" Text="GitHub Copilot CLI" />
+        <Control Id="ContinueCheckBox" Type="CheckBox" X="20" Y="156" Width="250" Height="18" Property="INSTALL_TOOL_CONTINUE" CheckBoxValue="1" Text="Continue" />
+        <Control Id="OpenCodeCheckBox" Type="CheckBox" X="20" Y="178" Width="250" Height="18" Property="INSTALL_TOOL_OPENCODE" CheckBoxValue="1" Text="OpenCode" />
+
+        <Control Id="Note" Type="Text" X="20" Y="214" Width="325" Height="30" NoPrefix="yes" Text="Select only the tools you want to configure. The installer preserves unrelated settings and only updates the Simple SQL Server MCP entry." />
+
+        <Control Id="BottomLine" Type="Line" X="0" Y="284" Width="370" Height="0" />
+      </Dialog>
+    </UI>
+  </Fragment>
+</Wix>

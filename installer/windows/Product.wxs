@@ -1,0 +1,141 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Package
+    Name="Simple SQL Server MCP"
+    Manufacturer="Simple SQL Server MCP"
+    Version="1.0.0.0"
+    ProductCode="8893F818-1CCF-4946-8AD7-4A98BFECD498"
+    UpgradeCode="7A1B1A23-D430-4D73-AE7E-8443F1B1338D"
+    Language="1033"
+    Scope="perUser"
+    InstallerVersion="500"
+    Compressed="yes">
+
+    <MajorUpgrade DowngradeErrorMessage="A newer version of Simple SQL Server MCP is already installed." />
+    <MediaTemplate EmbedCab="yes" />
+
+    <Property Id="WIXUI_INSTALLDIR" Value="INSTALLFOLDER" />
+    <Property Id="CONFIGURE_SIMPLE_SQLSERVER_MCP" Secure="yes" />
+    <Property Id="MCP_SERVER_NAME" Value="simple-sqlserver-mcp" Secure="yes" />
+    <Property Id="SQLSERVER_HOST" Value="localhost" Secure="yes" />
+    <Property Id="SQLSERVER_PORT" Value="1433" Secure="yes" />
+    <Property Id="SQLSERVER_DATABASE" Value="master" Secure="yes" />
+    <Property Id="SQLSERVER_INTEGRATED_SECURITY" Value="1" Secure="yes" />
+    <Property Id="SQLSERVER_ENCRYPT" Value="1" Secure="yes" />
+    <Property Id="SQLSERVER_TRUST_SERVER_CERTIFICATE" Value="1" Secure="yes" />
+    <Property Id="SQLSERVER_USERNAME" Secure="yes" />
+    <Property Id="SQLSERVER_PASSWORD" Secure="yes" Hidden="yes" />
+    <Property Id="MCP_SQLSERVER_MODE" Value="read-only" Secure="yes" />
+    <Property Id="INSTALL_TOOL_CODEX" Secure="yes" />
+    <Property Id="INSTALL_TOOL_CURSOR" Secure="yes" />
+    <Property Id="INSTALL_TOOL_GEMINI_CLI" Secure="yes" />
+    <Property Id="INSTALL_TOOL_GITHUB_COPILOT_CLI" Secure="yes" />
+    <Property Id="INSTALL_TOOL_CONTINUE" Secure="yes" />
+    <Property Id="INSTALL_TOOL_OPENCODE" Secure="yes" />
+
+    <WixVariable Id="WixUILicenseRtf" Value="License.rtf" />
+
+    <Binary Id="ToolDetectionCustomActionBinary" SourceFile="$(var.ToolDetectionCustomActionPath)" />
+
+    <StandardDirectory Id="LocalAppDataFolder">
+      <Directory Id="INSTALLFOLDER" Name="Simple SQL Server MCP" />
+    </StandardDirectory>
+
+    <DirectoryRef Id="INSTALLFOLDER">
+      <Component Id="MainExecutableComponent" Guid="0426E2E3-BE67-4E46-AC9B-FDDEBD165674" Bitness="always64">
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Components" Name="MainExecutable" Type="integer" Value="1" KeyPath="yes" />
+        <File
+          Id="MainExecutableFile"
+          Name="SimpleSqlServerMcp.exe"
+          Source="$(var.MainAppPublishDir)\SimpleSqlServerMcp.exe" />
+      </Component>
+
+      <Component Id="WindowsInstallerExecutableComponent" Guid="50F80C6C-81E4-4DA1-BA16-AD1BE34E9F8C" Bitness="always64">
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Components" Name="WindowsInstallerExecutable" Type="integer" Value="1" KeyPath="yes" />
+        <File
+          Id="WindowsInstallerExecutableFile"
+          Name="SimpleSqlServerMcp.WindowsInstaller.exe"
+          Source="$(var.WindowsInstallerPublishDir)\SimpleSqlServerMcp.WindowsInstaller.exe" />
+      </Component>
+
+      <Component Id="LegalDocumentsComponent" Guid="FFB2A435-3450-4832-AD20-96A28095DE44" Bitness="always64">
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Components" Name="LegalDocuments" Type="integer" Value="1" KeyPath="yes" />
+        <File
+          Id="ProjectLicenseFile"
+          Name="LICENSE.txt"
+          Source="$(var.ProjectLicenseTxt)" />
+        <File
+          Id="ThirdPartyNoticesFile"
+          Name="THIRD-PARTY-NOTICES.txt"
+          Source="$(var.ThirdPartyNoticesTxt)" />
+      </Component>
+
+      <Component Id="InstallFolderCleanupComponent" Guid="F0E47BC7-80D5-41FF-918B-F546FC7AAE42" Bitness="always64">
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Components" Name="InstallFolderCleanup" Type="integer" Value="1" KeyPath="yes" />
+        <RemoveFile Id="RemoveMainExecutableOnUninstall" Name="SimpleSqlServerMcp.exe" On="uninstall" />
+        <RemoveFile Id="RemoveWindowsInstallerExecutableOnUninstall" Name="SimpleSqlServerMcp.WindowsInstaller.exe" On="uninstall" />
+        <RemoveFile Id="RemoveProjectLicenseOnUninstall" Name="LICENSE.txt" On="uninstall" />
+        <RemoveFile Id="RemoveThirdPartyNoticesOnUninstall" Name="THIRD-PARTY-NOTICES.txt" On="uninstall" />
+        <RemoveFolder Id="RemoveInstallFolderOnUninstall" Directory="INSTALLFOLDER" On="uninstall" />
+      </Component>
+
+      <Component Id="InstallerSessionRegistryComponent" Guid="*" Bitness="always64" Condition="CONFIGURE_SIMPLE_SQLSERVER_MCP = &quot;1&quot;">
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer" Name="Marker" Type="integer" Value="1" KeyPath="yes" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="ServerName" Type="string" Value="[MCP_SERVER_NAME]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="SqlHost" Type="string" Value="[SQLSERVER_HOST]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="SqlPort" Type="string" Value="[SQLSERVER_PORT]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="SqlDatabase" Type="string" Value="[SQLSERVER_DATABASE]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="IntegratedSecurity" Type="string" Value="[SQLSERVER_INTEGRATED_SECURITY]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="Encrypt" Type="string" Value="[SQLSERVER_ENCRYPT]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="TrustServerCertificate" Type="string" Value="[SQLSERVER_TRUST_SERVER_CERTIFICATE]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="SqlUsername" Type="string" Value="[SQLSERVER_USERNAME]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="SqlPassword" Type="string" Value="[SQLSERVER_PASSWORD]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="Mode" Type="string" Value="[MCP_SQLSERVER_MODE]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="InstallCodex" Type="string" Value="[INSTALL_TOOL_CODEX]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="InstallCursor" Type="string" Value="[INSTALL_TOOL_CURSOR]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="InstallGeminiCli" Type="string" Value="[INSTALL_TOOL_GEMINI_CLI]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="InstallGitHubCopilotCli" Type="string" Value="[INSTALL_TOOL_GITHUB_COPILOT_CLI]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="InstallContinue" Type="string" Value="[INSTALL_TOOL_CONTINUE]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="InstallOpenCode" Type="string" Value="[INSTALL_TOOL_OPENCODE]" />
+      </Component>
+    </DirectoryRef>
+
+    <Feature Id="MainFeature" Title="Simple SQL Server MCP" Level="1">
+      <ComponentRef Id="MainExecutableComponent" />
+      <ComponentRef Id="WindowsInstallerExecutableComponent" />
+      <ComponentRef Id="LegalDocumentsComponent" />
+      <ComponentRef Id="InstallFolderCleanupComponent" />
+      <ComponentRef Id="InstallerSessionRegistryComponent" />
+    </Feature>
+
+    <UIRef Id="SimpleSqlServerMcpUI" />
+
+    <SetProperty
+      Id="ApplySelectedToolConfigs"
+      Value="&quot;[#WindowsInstallerExecutableFile]&quot; apply-config-from-registry"
+      Before="ApplySelectedToolConfigs"
+      Sequence="execute" />
+
+    <CustomAction
+      Id="ApplySelectedToolConfigs"
+      BinaryRef="Wix4UtilCA_X64"
+      DllEntry="WixSilentExec"
+      Execute="deferred"
+      HideTarget="yes"
+      Impersonate="yes"
+      Return="check" />
+
+    <CustomAction
+      Id="DetectInstalledTools"
+      BinaryRef="ToolDetectionCustomActionBinary"
+      DllEntry="DetectInstalledTools"
+      Execute="immediate"
+      Return="check" />
+
+    <InstallExecuteSequence>
+      <Custom
+        Action="ApplySelectedToolConfigs"
+        After="WriteRegistryValues"
+        Condition="NOT Installed AND CONFIGURE_SIMPLE_SQLSERVER_MCP = &quot;1&quot;" />
+    </InstallExecuteSequence>
+  </Package>
+</Wix>
