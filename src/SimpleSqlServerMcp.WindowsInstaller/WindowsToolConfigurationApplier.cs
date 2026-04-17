@@ -2,8 +2,17 @@ namespace SimpleSqlServerMcp.WindowsInstaller;
 
 public sealed class WindowsToolConfigurationApplier
 {
+    private readonly WindowsInstallerSqlPasswordPreparation _sqlPasswordPreparation;
+
+    public WindowsToolConfigurationApplier(WindowsInstallerSqlPasswordPreparation? sqlPasswordPreparation = null)
+    {
+        _sqlPasswordPreparation = sqlPasswordPreparation ?? new WindowsInstallerSqlPasswordPreparation();
+    }
+
     public IReadOnlyList<string> Apply(InstallerOptions options)
     {
+        options = _sqlPasswordPreparation.Prepare(options);
+
         var configuredPaths = new List<string>();
 
         if (options.InstallCodex)

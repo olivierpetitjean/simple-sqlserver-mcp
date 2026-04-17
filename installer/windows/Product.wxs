@@ -1,8 +1,8 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
   <Package
     Name="Simple SQL Server MCP"
-    Manufacturer="Simple SQL Server MCP"
-    Version="1.0.0.0"
+    Manufacturer="Simple SQL Server MCP contributors"
+    Version="$(var.InstallerProductVersion)"
     ProductCode="8893F818-1CCF-4946-8AD7-4A98BFECD498"
     UpgradeCode="7A1B1A23-D430-4D73-AE7E-8443F1B1338D"
     Language="1033"
@@ -24,6 +24,8 @@
     <Property Id="SQLSERVER_TRUST_SERVER_CERTIFICATE" Value="1" Secure="yes" />
     <Property Id="SQLSERVER_USERNAME" Secure="yes" />
     <Property Id="SQLSERVER_PASSWORD" Secure="yes" Hidden="yes" />
+    <Property Id="SQLSERVER_PASSWORD_SECRET_NAME" Secure="yes" />
+    <Property Id="STORE_PASSWORD_IN_WINDOWS_CREDENTIAL_MANAGER" Secure="yes" />
     <Property Id="MCP_SQLSERVER_MODE" Value="read-only" Secure="yes" />
     <Property Id="INSTALL_TOOL_CODEX" Secure="yes" />
     <Property Id="INSTALL_TOOL_CURSOR" Secure="yes" />
@@ -89,6 +91,8 @@
         <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="TrustServerCertificate" Type="string" Value="[SQLSERVER_TRUST_SERVER_CERTIFICATE]" />
         <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="SqlUsername" Type="string" Value="[SQLSERVER_USERNAME]" />
         <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="SqlPassword" Type="string" Value="[SQLSERVER_PASSWORD]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="SqlPasswordSecretName" Type="string" Value="[SQLSERVER_PASSWORD_SECRET_NAME]" />
+        <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="StorePasswordInWindowsCredentialManager" Type="string" Value="[STORE_PASSWORD_IN_WINDOWS_CREDENTIAL_MANAGER]" />
         <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="Mode" Type="string" Value="[MCP_SQLSERVER_MODE]" />
         <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="InstallCodex" Type="string" Value="[INSTALL_TOOL_CODEX]" />
         <RegistryValue Root="HKCU" Key="Software\SimpleSqlServerMcp\Installer\Session" Name="InstallCursor" Type="string" Value="[INSTALL_TOOL_CURSOR]" />

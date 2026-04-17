@@ -1,0 +1,23 @@
+<Project>
+
+  <PropertyGroup>
+    <Version Condition="'$(Version)' == ''">0.0.0-local</Version>
+    <AssemblyVersion Condition="'$(AssemblyVersion)' == ''">0.0.0.0</AssemblyVersion>
+    <FileVersion Condition="'$(FileVersion)' == ''">0.0.0.0</FileVersion>
+    <InformationalVersion Condition="'$(InformationalVersion)' == ''">$(Version)</InformationalVersion>
+
+    <Authors>Olivier Charreyre Petitjean</Authors>
+    <Company>Simple SQL Server MCP contributors</Company>
+    <Product>Simple SQL Server MCP</Product>
+    <Title>Simple SQL Server MCP</Title>
+    <Description>Simple SQL Server MCP is a local MCP server for SQL Server developer workflows.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/olivierpetitjean/simple-sqlserver-mcp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/olivierpetitjean/simple-sqlserver-mcp</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>mcp;sql-server;model-context-protocol;dotnet</PackageTags>
+    <Copyright>Copyright (c) 2026 Simple SQL Server MCP contributors</Copyright>
+    <NeutralLanguage>en</NeutralLanguage>
+  </PropertyGroup>
+
+</Project>

@@ -138,7 +138,10 @@ Optional options:
   --encrypt <bool>                  Default: true
   --trust-server-certificate <bool> Default: false
   --sql-username <name>             Required when integrated security is false
-  --sql-password <password>         Required when integrated security is false
+  --sql-password <password>         Required when storing a new password or using inline password mode
+  --sql-password-secret-name <name> Optional existing Windows Credential Manager entry name
+  --store-password-in-windows-credential-manager <bool>
+                                     Default: false
   --mode <read-only|mutable>        Default: read-only
   --tool-codex <bool>               Default: false
   --tool-cursor <bool>              Default: false

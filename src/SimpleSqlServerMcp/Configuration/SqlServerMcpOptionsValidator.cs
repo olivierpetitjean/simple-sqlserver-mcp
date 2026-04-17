@@ -31,9 +31,9 @@ internal sealed class SqlServerMcpOptionsValidator : IValidateOptions<SqlServerM
                 failures.Add("SQLSERVER_USERNAME must be configured when integrated security is disabled.");
             }
 
-            if (string.IsNullOrWhiteSpace(options.Password))
+            if (string.IsNullOrWhiteSpace(options.Password) && string.IsNullOrWhiteSpace(options.PasswordSecretName))
             {
-                failures.Add("SQLSERVER_PASSWORD must be configured when integrated security is disabled.");
+                failures.Add("Either SQLSERVER_PASSWORD or SQLSERVER_PASSWORD_SECRET_NAME must be configured when integrated security is disabled.");
             }
         }
 

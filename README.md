@@ -53,6 +53,8 @@ Installer walkthrough:
 
 ![SQL Server configuration step](docs/images/02-setup-sqlserver-connection-step.png)
 
+On Windows, the installer can optionally store the SQL password in the current user's Windows Credential Manager instead of writing `SQLSERVER_PASSWORD` into generated MCP client configs.
+
 3. Choose which supported tools should receive the MCP registration.
 
 ![Tool integration step](docs/images/03-setup-tool-integration-step.png)

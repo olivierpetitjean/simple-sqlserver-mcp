@@ -9,6 +9,8 @@
     <Nullable>enable</Nullable>
     <AssemblyName>SimpleSqlServerMcp.WindowsInstaller.CustomActions</AssemblyName>
     <RootNamespace>SimpleSqlServerMcp.WindowsInstaller.CustomActions</RootNamespace>
+    <AssemblyTitle>Simple SQL Server MCP Windows Installer Custom Actions</AssemblyTitle>
+    <Description>Custom actions used by the Simple SQL Server MCP Windows installer.</Description>
   </PropertyGroup>
 
   <ItemGroup>

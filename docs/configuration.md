@@ -15,6 +15,7 @@ The SQL Server connection string is built internally from structured settings. U
 | `SQLSERVER_DATABASE` | No | `master` | Default database used when no `targetDatabase` is supplied |
 | `SQLSERVER_USERNAME` | Sometimes | none | Required when integrated security is disabled |
 | `SQLSERVER_PASSWORD` | Sometimes | none | Required when integrated security is disabled |
+| `SQLSERVER_PASSWORD_SECRET_NAME` | Sometimes | none | Windows Credential Manager entry name used instead of `SQLSERVER_PASSWORD` |
 | `SQLSERVER_INTEGRATED_SECURITY` | No | `false` | Set to `true` for Windows auth / integrated auth |
 | `SQLSERVER_ENCRYPT` | No | `true` | SQL client encryption flag |
 | `SQLSERVER_TRUST_SERVER_CERTIFICATE` | No | `false` | Trust server certificate flag |
@@ -38,11 +39,21 @@ When `SQLSERVER_INTEGRATED_SECURITY=true`:
 
 - `SQLSERVER_USERNAME` is not required
 - `SQLSERVER_PASSWORD` is not required
+- `SQLSERVER_PASSWORD_SECRET_NAME` is ignored
 
 When `SQLSERVER_INTEGRATED_SECURITY=false`:
 
 - `SQLSERVER_USERNAME` is required
-- `SQLSERVER_PASSWORD` is required
+- either `SQLSERVER_PASSWORD` or `SQLSERVER_PASSWORD_SECRET_NAME` is required
+
+Resolution order when SQL authentication is used:
+
+1. if `SQLSERVER_PASSWORD_SECRET_NAME` is set, the MCP resolves the password from Windows Credential Manager
+2. otherwise, it uses `SQLSERVER_PASSWORD`
+
+Current limitation:
+
+- `SQLSERVER_PASSWORD_SECRET_NAME` is supported only on Windows in this release
 
 ## `targetDatabase`
 
@@ -145,6 +156,19 @@ $env:SQLSERVER_HOST="localhost"
 $env:SQLSERVER_DATABASE="master"
 $env:SQLSERVER_USERNAME="sa"
 $env:SQLSERVER_PASSWORD="YourStrong(!)Password"
+$env:SQLSERVER_ENCRYPT="false"
+$env:SQLSERVER_TRUST_SERVER_CERTIFICATE="true"
+$env:MCP_SQLSERVER_ALLOWED_DATABASES="Developpe-2022,Reporting"
+dotnet run --project .\src\SimpleSqlServerMcp
+```
+
+Windows Credential Manager:
+
+```powershell
+$env:SQLSERVER_HOST="localhost"
+$env:SQLSERVER_DATABASE="master"
+$env:SQLSERVER_USERNAME="sa"
+$env:SQLSERVER_PASSWORD_SECRET_NAME="SimpleSqlServerMcp/SqlPassword/simple-sqlserver-mcp"
 $env:SQLSERVER_ENCRYPT="false"
 $env:SQLSERVER_TRUST_SERVER_CERTIFICATE="true"
 $env:MCP_SQLSERVER_ALLOWED_DATABASES="Developpe-2022,Reporting"

@@ -20,11 +20,12 @@ Purpose:
 
 - return basic SQL Server connection context and active MCP mode
 
-Typical output:
+  Typical output:
 
-- server name
-- login name
-- current database
+  - MCP version
+  - server name
+  - login name
+  - current database
 - edition
 - version
 - active mode

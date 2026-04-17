@@ -20,6 +20,7 @@ public sealed class ServerInfoToolTests(
         WriteResultSummary("server_info", structuredContent);
 
         // Assert
+        structuredContent.GetProperty("mcpVersion").GetString().Should().NotBeNullOrWhiteSpace();
         structuredContent.GetProperty("currentDatabase").GetString().Should().Be("master");
         structuredContent.GetProperty("mode").GetString().Should().Be("ReadOnly");
         structuredContent.GetProperty("serverName").GetString().Should().NotBeNullOrWhiteSpace();

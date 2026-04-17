@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using ModelContextProtocol.Protocol;
 using SimpleSqlServerMcp.Safety;
+using SimpleSqlServerMcp.Security;
 using SimpleSqlServerMcp.Services;
 using SimpleSqlServerMcp.Sql;
 using SimpleSqlServerMcp.Configuration;
@@ -23,6 +24,7 @@ internal static class ServiceCollectionExtensions
                 options.Database = configuration["SQLSERVER_DATABASE"] ?? "master";
                 options.Username = configuration["SQLSERVER_USERNAME"];
                 options.Password = configuration["SQLSERVER_PASSWORD"];
+                options.PasswordSecretName = configuration["SQLSERVER_PASSWORD_SECRET_NAME"];
                 options.IntegratedSecurity = ParseBool(configuration["SQLSERVER_INTEGRATED_SECURITY"], false);
                 options.Encrypt = ParseBool(configuration["SQLSERVER_ENCRYPT"], true);
                 options.TrustServerCertificate = ParseBool(configuration["SQLSERVER_TRUST_SERVER_CERTIFICATE"], false);
@@ -39,6 +41,9 @@ internal static class ServiceCollectionExtensions
             .AddSingleton<IValidateOptions<SqlServerMcpOptions>, SqlServerMcpOptionsValidator>()
             .AddSingleton<IReadOnlyQueryValidator, ReadOnlyQueryValidator>()
             .AddSingleton<IMutableQueryValidator, MutableQueryValidator>()
+            .AddSingleton<IPlatformInfo, RuntimePlatformInfo>()
+            .AddSingleton<IWindowsCredentialReader, WindowsCredentialReader>()
+            .AddSingleton<ISqlPasswordResolver, SqlPasswordResolver>()
             .AddSingleton<ISqlConnectionFactory, SqlConnectionFactory>()
             .AddSingleton<IServerInfoService, ServerInfoService>()
             .AddSingleton<ISchemaExplorerService, SchemaExplorerService>()

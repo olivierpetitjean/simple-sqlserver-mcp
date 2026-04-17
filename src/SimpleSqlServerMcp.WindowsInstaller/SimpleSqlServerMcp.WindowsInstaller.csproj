@@ -5,6 +5,8 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyTitle>Simple SQL Server MCP Windows Installer</AssemblyTitle>
+    <Description>Windows installer helper for Simple SQL Server MCP.</Description>
   </PropertyGroup>
 
   <ItemGroup>

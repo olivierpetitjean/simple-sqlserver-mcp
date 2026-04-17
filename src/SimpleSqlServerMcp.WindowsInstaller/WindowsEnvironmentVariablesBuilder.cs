@@ -19,7 +19,15 @@ public static class WindowsEnvironmentVariablesBuilder
         if (!options.IntegratedSecurity)
         {
             environmentVariables["SQLSERVER_USERNAME"] = options.SqlUsername!;
-            environmentVariables["SQLSERVER_PASSWORD"] = options.SqlPassword!;
+
+            if (!string.IsNullOrWhiteSpace(options.SqlPasswordSecretName))
+            {
+                environmentVariables["SQLSERVER_PASSWORD_SECRET_NAME"] = options.SqlPasswordSecretName!;
+            }
+            else
+            {
+                environmentVariables["SQLSERVER_PASSWORD"] = options.SqlPassword!;
+            }
         }
 
         return environmentVariables;

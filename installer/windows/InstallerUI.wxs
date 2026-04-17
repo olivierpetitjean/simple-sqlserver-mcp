@@ -93,10 +93,10 @@
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
       </Dialog>
 
-      <Dialog Id="SqlServerConfigDlg" Width="370" Height="318" Title="SQL Server Configuration">
-        <Control Id="Next" Type="PushButton" X="236" Y="291" Width="56" Height="17" Default="yes" Text="Next" />
-        <Control Id="Back" Type="PushButton" X="180" Y="291" Width="56" Height="17" Text="Back" />
-        <Control Id="Cancel" Type="PushButton" X="304" Y="291" Width="56" Height="17" Cancel="yes" Text="Cancel">
+      <Dialog Id="SqlServerConfigDlg" Width="370" Height="340" Title="SQL Server Configuration">
+        <Control Id="Next" Type="PushButton" X="236" Y="313" Width="56" Height="17" Default="yes" Text="Next" />
+        <Control Id="Back" Type="PushButton" X="180" Y="313" Width="56" Height="17" Text="Back" />
+        <Control Id="Cancel" Type="PushButton" X="304" Y="313" Width="56" Height="17" Cancel="yes" Text="Cancel">
           <Publish Event="SpawnDialog" Value="CancelDlg" />
         </Control>
 
@@ -123,18 +123,20 @@
         <Control Id="PasswordLabel" Type="Text" X="20" Y="186" Width="115" Height="15" Hidden="yes" ShowCondition="SQLSERVER_INTEGRATED_SECURITY &lt;&gt; &quot;1&quot;" HideCondition="SQLSERVER_INTEGRATED_SECURITY = &quot;1&quot;" Text="SQL Server password:" />
         <Control Id="PasswordEdit" Type="Edit" X="145" Y="184" Width="195" Height="18" Property="SQLSERVER_PASSWORD" Password="yes" Hidden="yes" ShowCondition="SQLSERVER_INTEGRATED_SECURITY &lt;&gt; &quot;1&quot;" HideCondition="SQLSERVER_INTEGRATED_SECURITY = &quot;1&quot;" />
 
-        <Control Id="EncryptCheckBox" Type="CheckBox" X="20" Y="210" Width="240" Height="18" Property="SQLSERVER_ENCRYPT" CheckBoxValue="1" Text="Encrypt connection (TLS)" />
-        <Control Id="TrustServerCertificateCheckBox" Type="CheckBox" X="20" Y="232" Width="280" Height="18" Property="SQLSERVER_TRUST_SERVER_CERTIFICATE" CheckBoxValue="1" Text="Trust server certificate" />
+        <Control Id="CredentialManagerCheckBox" Type="CheckBox" X="20" Y="208" Width="320" Height="18" Property="STORE_PASSWORD_IN_WINDOWS_CREDENTIAL_MANAGER" CheckBoxValue="1" Hidden="yes" ShowCondition="SQLSERVER_INTEGRATED_SECURITY &lt;&gt; &quot;1&quot;" HideCondition="SQLSERVER_INTEGRATED_SECURITY = &quot;1&quot;" Text="Store password in Windows Credential Manager" />
 
-        <Control Id="ModeLabel" Type="Text" X="20" Y="256" Width="115" Height="15" Text="MCP mode:" />
-        <Control Id="ModeGroup" Type="RadioButtonGroup" X="145" Y="254" Width="195" Height="18" Property="MCP_SQLSERVER_MODE">
+        <Control Id="EncryptCheckBox" Type="CheckBox" X="20" Y="232" Width="240" Height="18" Property="SQLSERVER_ENCRYPT" CheckBoxValue="1" Text="Encrypt connection (TLS)" />
+        <Control Id="TrustServerCertificateCheckBox" Type="CheckBox" X="20" Y="254" Width="280" Height="18" Property="SQLSERVER_TRUST_SERVER_CERTIFICATE" CheckBoxValue="1" Text="Trust server certificate" />
+
+        <Control Id="ModeLabel" Type="Text" X="20" Y="278" Width="115" Height="15" Text="MCP mode:" />
+        <Control Id="ModeGroup" Type="RadioButtonGroup" X="145" Y="276" Width="195" Height="18" Property="MCP_SQLSERVER_MODE">
           <RadioButtonGroup Property="MCP_SQLSERVER_MODE">
             <RadioButton Value="read-only" X="0" Y="0" Width="90" Height="15" Text="Read-only" />
             <RadioButton Value="mutable" X="95" Y="0" Width="70" Height="15" Text="Mutable" />
           </RadioButtonGroup>
         </Control>
 
-        <Control Id="BottomLine" Type="Line" X="0" Y="282" Width="370" Height="0" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="304" Width="370" Height="0" />
       </Dialog>
 
       <Dialog Id="ToolSelectionDlg" Width="370" Height="320" Title="Tool Registration">

@@ -19,8 +19,20 @@ public sealed record InstallerOptions(
     bool InstallGeminiCli,
     bool InstallGitHubCopilotCli,
     bool InstallContinue,
-    bool InstallOpenCode)
+    bool InstallOpenCode,
+    bool StorePasswordInWindowsCredentialManager = false,
+    string? SqlPasswordSecretName = null)
 {
+    public string GetEffectiveSqlPasswordSecretName()
+    {
+        if (!string.IsNullOrWhiteSpace(SqlPasswordSecretName))
+        {
+            return SqlPasswordSecretName.Trim();
+        }
+
+        return $"SimpleSqlServerMcp/SqlPassword/{ServerName.Trim()}";
+    }
+
     public static InstallerOptions Parse(IReadOnlyList<string> args)
     {
         var values = ParseNamedArguments(args);
@@ -42,6 +54,7 @@ public sealed record InstallerOptions(
         var installGitHubCopilotCliText = GetValue(values, "--tool-github-copilot-cli") ?? "false";
         var installContinueText = GetValue(values, "--tool-continue") ?? "false";
         var installOpenCodeText = GetValue(values, "--tool-opencode") ?? "false";
+        var storePasswordInWindowsCredentialManagerText = GetValue(values, "--store-password-in-windows-credential-manager") ?? "false";
 
         if (!int.TryParse(sqlPortText, out var sqlPort) || sqlPort <= 0)
         {
@@ -93,6 +106,11 @@ public sealed record InstallerOptions(
             throw new ArgumentException("`--tool-opencode` must be `true`, `false`, `1`, or `0`.");
         }
 
+        if (!TryParseFlexibleBool(storePasswordInWindowsCredentialManagerText, out var storePasswordInWindowsCredentialManager))
+        {
+            throw new ArgumentException("`--store-password-in-windows-credential-manager` must be `true`, `false`, `1`, or `0`.");
+        }
+
         if (!string.Equals(mode, "read-only", StringComparison.OrdinalIgnoreCase) &&
             !string.Equals(mode, "mutable", StringComparison.OrdinalIgnoreCase))
         {
@@ -101,12 +119,22 @@ public sealed record InstallerOptions(
 
         var sqlUsername = GetValue(values, "--sql-username");
         var sqlPassword = GetValue(values, "--sql-password");
+        var sqlPasswordSecretName = GetValue(values, "--sql-password-secret-name");
 
         if (!integratedSecurity &&
-            (string.IsNullOrWhiteSpace(sqlUsername) || string.IsNullOrWhiteSpace(sqlPassword)))
+            (string.IsNullOrWhiteSpace(sqlUsername) ||
+             (string.IsNullOrWhiteSpace(sqlPassword) && string.IsNullOrWhiteSpace(sqlPasswordSecretName))))
         {
             throw new ArgumentException(
-                "`--sql-username` and `--sql-password` are required when `--integrated-security` is `false`.");
+                "`--sql-username` and either `--sql-password` or `--sql-password-secret-name` are required when `--integrated-security` is `false`.");
+        }
+
+        if (!integratedSecurity &&
+            storePasswordInWindowsCredentialManager &&
+            string.IsNullOrWhiteSpace(sqlPassword))
+        {
+            throw new ArgumentException(
+                "`--sql-password` is required when `--store-password-in-windows-credential-manager` is `true`.");
         }
 
         return new InstallerOptions(
@@ -128,7 +156,9 @@ public sealed record InstallerOptions(
             InstallGeminiCli: installGeminiCli,
             InstallGitHubCopilotCli: installGitHubCopilotCli,
             InstallContinue: installContinue,
-            InstallOpenCode: installOpenCode);
+            InstallOpenCode: installOpenCode,
+            StorePasswordInWindowsCredentialManager: storePasswordInWindowsCredentialManager,
+            SqlPasswordSecretName: sqlPasswordSecretName);
     }
 
     private static Dictionary<string, string> ParseNamedArguments(IReadOnlyList<string> args)

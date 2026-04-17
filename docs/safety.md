@@ -164,6 +164,22 @@ This is intentionally unsafe:
 
 This option is acceptable for local dev/test databases. It should be documented clearly whenever it is enabled.
 
+## Secret Handling
+
+This project targets local developer workflows, not hardened secret isolation.
+
+Current authentication storage options are:
+
+- inline `SQLSERVER_PASSWORD`
+- Windows-only `SQLSERVER_PASSWORD_SECRET_NAME`
+
+Using `SQLSERVER_PASSWORD_SECRET_NAME` keeps the raw SQL password out of generated MCP client configuration files, which is better operational hygiene.
+
+It is still not a hard security boundary:
+
+- an agent with the same OS-level access as the current user is not fully sandboxed by this mechanism
+- integrated security still gives the process the user's Windows identity
+
 ## Recommended User Guidance
 
 For normal use:

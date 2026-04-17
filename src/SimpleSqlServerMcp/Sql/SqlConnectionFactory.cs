@@ -1,17 +1,21 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using SimpleSqlServerMcp.Configuration;
+using SimpleSqlServerMcp.Security;
 
 namespace SimpleSqlServerMcp.Sql;
 
-internal sealed class SqlConnectionFactory(IOptions<SqlServerMcpOptions> options) : ISqlConnectionFactory
+internal sealed class SqlConnectionFactory(
+    IOptions<SqlServerMcpOptions> options,
+    ISqlPasswordResolver sqlPasswordResolver) : ISqlConnectionFactory
 {
     private readonly SqlServerMcpOptions _options = options.Value;
+    private readonly ISqlPasswordResolver _sqlPasswordResolver = sqlPasswordResolver;
 
     public async Task<SqlConnection> OpenConnectionAsync(string? targetDatabase, CancellationToken cancellationToken)
     {
         string effectiveDatabase = ResolveDatabase(targetDatabase);
-        SqlConnection connection = new(BuildConnectionString(_options, effectiveDatabase));
+        SqlConnection connection = new(BuildConnectionString(_options, effectiveDatabase, _sqlPasswordResolver.ResolvePassword()));
         await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
         return connection;
     }
@@ -28,7 +32,7 @@ internal sealed class SqlConnectionFactory(IOptions<SqlServerMcpOptions> options
         return effectiveDatabase;
     }
 
-    private static string BuildConnectionString(SqlServerMcpOptions options, string initialCatalog)
+    private static string BuildConnectionString(SqlServerMcpOptions options, string initialCatalog, string? password)
     {
         SqlConnectionStringBuilder builder = new()
         {
@@ -43,7 +47,7 @@ internal sealed class SqlConnectionFactory(IOptions<SqlServerMcpOptions> options
         if (!options.IntegratedSecurity)
         {
             builder.UserID = options.Username;
-            builder.Password = options.Password;
+            builder.Password = password;
         }
 
         return builder.ConnectionString;

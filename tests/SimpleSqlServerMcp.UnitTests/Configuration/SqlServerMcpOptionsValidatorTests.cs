@@ -100,6 +100,27 @@ public sealed class SqlServerMcpOptionsValidatorTests
         result.Failures.Should().NotBeNull();
         result.Failures!.Should().Contain(failure => failure.Contains("SQLSERVER_USERNAME", StringComparison.Ordinal));
         result.Failures!.Should().Contain(failure => failure.Contains("SQLSERVER_PASSWORD", StringComparison.Ordinal));
+        result.Failures!.Should().Contain(failure => failure.Contains("SQLSERVER_PASSWORD_SECRET_NAME", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Validate_ShouldSucceed_WhenIntegratedSecurityIsDisabled_AndPasswordSecretNameIsProvided()
+    {
+        // Arrange
+        SqlServerMcpOptions options = new()
+        {
+            Host = ".",
+            Database = "master",
+            IntegratedSecurity = false,
+            Username = "sa",
+            PasswordSecretName = "SimpleSqlServerMcp/SqlPassword/test",
+        };
+
+        // Act
+        ValidateOptionsResult result = _validator.Validate(name: null, options);
+
+        // Assert
+        result.Succeeded.Should().BeTrue();
     }
 
     [Fact]

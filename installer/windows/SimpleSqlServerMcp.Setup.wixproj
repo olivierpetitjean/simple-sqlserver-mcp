@@ -13,7 +13,8 @@
     <MainAppPublishDir>$(RepoRoot)artifacts\windows\publish\main</MainAppPublishDir>
     <WindowsInstallerPublishDir>$(RepoRoot)artifacts\windows\publish\windows-installer</WindowsInstallerPublishDir>
     <ToolDetectionCustomActionPath>$(RepoRoot)src\SimpleSqlServerMcp.WindowsInstaller.CustomActions\bin\x64\Release\net472\SimpleSqlServerMcp.WindowsInstaller.CustomActions.CA.dll</ToolDetectionCustomActionPath>
-    <DefineConstants>licenseRtf=$(MSBuildProjectDirectory)\License.rtf;MainAppPublishDir=$(MainAppPublishDir);WindowsInstallerPublishDir=$(WindowsInstallerPublishDir);ProjectLicenseTxt=$(RepoRoot)LICENSE;ThirdPartyNoticesTxt=$(RepoRoot)THIRD-PARTY-NOTICES.txt;ToolDetectionCustomActionPath=$(ToolDetectionCustomActionPath)</DefineConstants>
+    <InstallerProductVersion Condition="'$(InstallerProductVersion)' == ''">0.0.0</InstallerProductVersion>
+    <DefineConstants>licenseRtf=$(MSBuildProjectDirectory)\License.rtf;MainAppPublishDir=$(MainAppPublishDir);WindowsInstallerPublishDir=$(WindowsInstallerPublishDir);ProjectLicenseTxt=$(RepoRoot)LICENSE;ThirdPartyNoticesTxt=$(RepoRoot)THIRD-PARTY-NOTICES.txt;ToolDetectionCustomActionPath=$(ToolDetectionCustomActionPath);InstallerProductVersion=$(InstallerProductVersion)</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,9 +25,9 @@
   <Target Name="PublishInstallerPayloads" BeforeTargets="BeforeBuild">
     <MakeDir Directories="$(MainAppPublishDir);$(WindowsInstallerPublishDir)" />
 
-    <Exec Command="dotnet publish &quot;$(RepoRoot)src\SimpleSqlServerMcp\SimpleSqlServerMcp.csproj&quot; -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -o &quot;$(MainAppPublishDir)&quot;" />
-    <Exec Command="dotnet publish &quot;$(RepoRoot)src\SimpleSqlServerMcp.WindowsInstaller\SimpleSqlServerMcp.WindowsInstaller.csproj&quot; -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o &quot;$(WindowsInstallerPublishDir)&quot;" />
-    <Exec Command="dotnet build &quot;$(RepoRoot)src\SimpleSqlServerMcp.WindowsInstaller.CustomActions\SimpleSqlServerMcp.WindowsInstaller.CustomActions.csproj&quot; -c Release" />
+    <Exec Command="dotnet publish &quot;$(RepoRoot)src\SimpleSqlServerMcp\SimpleSqlServerMcp.csproj&quot; -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:Version=$(Version) -p:AssemblyVersion=$(AssemblyVersion) -p:FileVersion=$(FileVersion) -p:InformationalVersion=$(InformationalVersion) -o &quot;$(MainAppPublishDir)&quot;" />
+    <Exec Command="dotnet publish &quot;$(RepoRoot)src\SimpleSqlServerMcp.WindowsInstaller\SimpleSqlServerMcp.WindowsInstaller.csproj&quot; -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:Version=$(Version) -p:AssemblyVersion=$(AssemblyVersion) -p:FileVersion=$(FileVersion) -p:InformationalVersion=$(InformationalVersion) -o &quot;$(WindowsInstallerPublishDir)&quot;" />
+    <Exec Command="dotnet build &quot;$(RepoRoot)src\SimpleSqlServerMcp.WindowsInstaller.CustomActions\SimpleSqlServerMcp.WindowsInstaller.CustomActions.csproj&quot; -c Release -p:Version=$(Version) -p:AssemblyVersion=$(AssemblyVersion) -p:FileVersion=$(FileVersion) -p:InformationalVersion=$(InformationalVersion)" />
   </Target>
 
   <Target Name="CopyInstallerToOutput" AfterTargets="Build">

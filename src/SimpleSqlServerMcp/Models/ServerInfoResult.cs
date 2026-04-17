@@ -4,6 +4,8 @@ namespace SimpleSqlServerMcp.Models;
 
 internal sealed class ServerInfoResult
 {
+    public required string McpVersion { get; init; }
+
     public required string ServerName { get; init; }
 
     public string? LoginName { get; init; }

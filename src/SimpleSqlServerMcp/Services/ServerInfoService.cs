@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using SimpleSqlServerMcp.Configuration;
 using SimpleSqlServerMcp.Models;
 using SimpleSqlServerMcp.Sql;
+using System.Reflection;
 
 namespace SimpleSqlServerMcp.Services;
 
@@ -21,6 +22,7 @@ internal sealed class ServerInfoService(
 
     private readonly ISqlConnectionFactory _connectionFactory = connectionFactory;
     private readonly SqlServerMcpOptions _options = options.Value;
+    private static readonly string McpVersion = ResolveMcpVersion();
 
     public async Task<ServerInfoResult> GetServerInfoAsync(CancellationToken cancellationToken)
     {
@@ -38,6 +40,7 @@ internal sealed class ServerInfoService(
 
         return new ServerInfoResult
         {
+            McpVersion = McpVersion,
             ServerName = GetNullableString(reader, "ServerName") ?? "(unknown)",
             LoginName = GetNullableString(reader, "LoginName"),
             CurrentDatabase = GetNullableString(reader, "CurrentDatabase"),
@@ -55,5 +58,18 @@ internal sealed class ServerInfoService(
     {
         int ordinal = reader.GetOrdinal(columnName);
         return reader.IsDBNull(ordinal) ? null : reader.GetString(ordinal);
+    }
+
+    private static string ResolveMcpVersion()
+    {
+        Assembly assembly = typeof(ServerInfoService).Assembly;
+        string? informationalVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion;
+
+        if (!string.IsNullOrWhiteSpace(informationalVersion))
+        {
+            return informationalVersion;
+        }
+
+        return assembly.GetName().Version?.ToString() ?? "(unknown)";
     }
 }

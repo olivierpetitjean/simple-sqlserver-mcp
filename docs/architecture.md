@@ -77,6 +77,7 @@ Examples:
 - write-query execution
 - transactional execution
 - stored procedure execution
+- SQL password resolution
 
 These services know SQL Server behavior but do not know MCP transport details.
 
@@ -87,6 +88,11 @@ Contains SQL infrastructure:
 - connection factory
 - database access policy
 - SQL identifier quoting
+
+The connection factory also resolves the effective SQL password through a small abstraction so the runtime can support:
+
+- inline `SQLSERVER_PASSWORD`
+- Windows Credential Manager via `SQLSERVER_PASSWORD_SECRET_NAME`
 
 ### `Safety/`
 
@@ -143,6 +149,8 @@ Windows-specific logic lives in:
 
 - `src/SimpleSqlServerMcp.WindowsInstaller`
 - `installer/windows`
+
+That Windows installer layer also owns the optional write path into the current user's Windows Credential Manager for generated MCP registrations.
 
 Unix installation currently lives in:
 

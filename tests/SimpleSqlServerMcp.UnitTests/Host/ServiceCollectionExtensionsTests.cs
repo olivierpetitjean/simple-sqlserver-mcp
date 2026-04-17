@@ -19,6 +19,7 @@ public sealed class ServiceCollectionExtensionsTests
             ["SQLSERVER_DATABASE"] = "Developpe-2022",
             ["SQLSERVER_USERNAME"] = "sa",
             ["SQLSERVER_PASSWORD"] = "Secret123!",
+            ["SQLSERVER_PASSWORD_SECRET_NAME"] = "SimpleSqlServerMcp/SqlPassword/test",
             ["SQLSERVER_INTEGRATED_SECURITY"] = "false",
             ["SQLSERVER_ENCRYPT"] = "false",
             ["SQLSERVER_TRUST_SERVER_CERTIFICATE"] = "true",
@@ -48,6 +49,7 @@ public sealed class ServiceCollectionExtensionsTests
         options.Database.Should().Be("Developpe-2022");
         options.Username.Should().Be("sa");
         options.Password.Should().Be("Secret123!");
+        options.PasswordSecretName.Should().Be("SimpleSqlServerMcp/SqlPassword/test");
         options.IntegratedSecurity.Should().BeFalse();
         options.Encrypt.Should().BeFalse();
         options.TrustServerCertificate.Should().BeTrue();

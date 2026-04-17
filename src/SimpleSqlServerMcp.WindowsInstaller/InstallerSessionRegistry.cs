@@ -33,13 +33,15 @@ public static class InstallerSessionRegistry
             TrustServerCertificate: ReadBool(sessionKey, "TrustServerCertificate"),
             SqlUsername: ReadOptionalString(sessionKey, "SqlUsername"),
             SqlPassword: ReadOptionalString(sessionKey, "SqlPassword"),
+            SqlPasswordSecretName: ReadOptionalString(sessionKey, "SqlPasswordSecretName"),
             Mode: ReadRequiredString(sessionKey, "Mode"),
             InstallCodex: ReadBool(sessionKey, "InstallCodex"),
             InstallCursor: ReadBool(sessionKey, "InstallCursor"),
             InstallGeminiCli: ReadBool(sessionKey, "InstallGeminiCli"),
             InstallGitHubCopilotCli: ReadBool(sessionKey, "InstallGitHubCopilotCli"),
             InstallContinue: ReadBool(sessionKey, "InstallContinue"),
-            InstallOpenCode: ReadBool(sessionKey, "InstallOpenCode"));
+            InstallOpenCode: ReadBool(sessionKey, "InstallOpenCode"),
+            StorePasswordInWindowsCredentialManager: ReadBool(sessionKey, "StorePasswordInWindowsCredentialManager"));
 
         Registry.CurrentUser.DeleteSubKeyTree(SessionKeyPath, throwOnMissingSubKey: false);
         return options;

@@ -5,6 +5,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyTitle>Simple SQL Server MCP</AssemblyTitle>
+    <Description>Simple SQL Server MCP is a local MCP server for SQL Server developer workflows.</Description>
   </PropertyGroup>
 
   <ItemGroup>

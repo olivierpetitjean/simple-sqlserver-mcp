@@ -14,6 +14,8 @@ internal sealed class SqlServerMcpOptions
 
     public string? Password { get; set; }
 
+    public string? PasswordSecretName { get; set; }
+
     public bool IntegratedSecurity { get; set; }
 
     public bool Encrypt { get; set; } = true;
