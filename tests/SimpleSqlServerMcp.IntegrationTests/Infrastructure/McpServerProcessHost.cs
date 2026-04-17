@@ -106,6 +106,19 @@ public sealed class McpServerProcessHost : IAsyncDisposable
 
     private static string ResolveExecutablePath()
     {
+        string? explicitPath = Environment.GetEnvironmentVariable("SIMPLE_SQLSERVER_MCP_TEST_SERVER_PATH");
+        if (!string.IsNullOrWhiteSpace(explicitPath))
+        {
+            string normalizedExplicitPath = Path.GetFullPath(explicitPath);
+            if (!File.Exists(normalizedExplicitPath))
+            {
+                throw new FileNotFoundException(
+                    $"The override path from SIMPLE_SQLSERVER_MCP_TEST_SERVER_PATH does not exist: '{normalizedExplicitPath}'.");
+            }
+
+            return normalizedExplicitPath;
+        }
+
         string executableName = OperatingSystem.IsWindows()
             ? "SimpleSqlServerMcp.exe"
             : "SimpleSqlServerMcp";
@@ -116,10 +129,15 @@ public sealed class McpServerProcessHost : IAsyncDisposable
             "SimpleSqlServerMcp",
             "bin"));
 
+        string preferredConfiguration = ResolvePreferredBuildConfiguration();
+        string fallbackConfiguration = string.Equals(preferredConfiguration, "Debug", StringComparison.OrdinalIgnoreCase)
+            ? "Release"
+            : "Debug";
+
         string[] candidatePaths =
         [
-            Path.Combine(runtimeOutputRoot, "Release", "net8.0", executableName),
-            Path.Combine(runtimeOutputRoot, "Debug", "net8.0", executableName),
+            Path.Combine(runtimeOutputRoot, preferredConfiguration, "net8.0", executableName),
+            Path.Combine(runtimeOutputRoot, fallbackConfiguration, "net8.0", executableName),
         ];
 
         string? path = candidatePaths.FirstOrDefault(File.Exists);
@@ -131,6 +149,25 @@ public sealed class McpServerProcessHost : IAsyncDisposable
         }
 
         return path;
+    }
+
+    private static string ResolvePreferredBuildConfiguration()
+    {
+        string baseDirectory = AppContext.BaseDirectory;
+
+        if (baseDirectory.Contains($"{Path.DirectorySeparatorChar}Debug{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) ||
+            baseDirectory.Contains($"{Path.AltDirectorySeparatorChar}Debug{Path.AltDirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Debug";
+        }
+
+        if (baseDirectory.Contains($"{Path.DirectorySeparatorChar}Release{Path.DirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase) ||
+            baseDirectory.Contains($"{Path.AltDirectorySeparatorChar}Release{Path.AltDirectorySeparatorChar}", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Release";
+        }
+
+        return "Debug";
     }
 
     private static string ResolveRepositoryRoot()

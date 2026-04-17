@@ -104,6 +104,7 @@ The current server exposes these MCP tools:
 - `get_table_sample`
 - `execute_read_query`
 - `execute_write_query`
+- `execute_transaction`
 - `list_stored_procedures`
 - `describe_stored_procedure`
 - `execute_stored_procedure`
@@ -143,6 +144,7 @@ Use this when you want the agent to:
 In this mode:
 
 - `execute_write_query` is enabled
+- `execute_transaction` is enabled
 - `execute_stored_procedure` is enabled
 
 ## Supported SQL Surface
@@ -204,6 +206,39 @@ Still excluded from `execute_write_query`:
 - free-form `EXEC`
 - arbitrary multi-statement scripts
 - unsupported SQL Server statement families outside the whitelist
+
+### Transactional execution
+
+`execute_transaction` executes multiple mutable SQL statements atomically inside one SQL Server transaction.
+
+Intended use:
+
+- group related `INSERT` / `UPDATE` / `DELETE` statements
+- mix DML with transaction-safe object-level DDL in one atomic unit
+- let an agent attempt a multi-step change without leaving partial state behind
+
+Behavior:
+
+- validates each statement with the existing mutable whitelist
+- rejects database-level or unsafe statements that are not supported inside the transaction tool
+- commits only if every statement succeeds
+- rolls back the full transaction if any statement fails
+- accepts an optional `isolationLevel`
+
+Important limitation:
+
+- this is a single-call transaction model
+- the MCP does not keep open transactions across multiple tool calls
+
+Supported `isolationLevel` values:
+
+- `read_committed`
+- `read_uncommitted`
+- `repeatable_read`
+- `serializable`
+- `snapshot`
+
+If `isolationLevel` is omitted, the MCP uses the default SQL Server transaction behavior for the session.
 
 ### Stored procedures
 

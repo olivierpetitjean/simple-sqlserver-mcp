@@ -144,6 +144,36 @@ Output:
 - `rowsAffected`
 - `durationMilliseconds`
 
+### `execute_transaction`
+
+Purpose:
+
+- execute multiple mutable SQL statements atomically inside one SQL Server transaction
+
+Parameters:
+
+- `statements`
+- `targetDatabase?`
+- `isolationLevel?`
+- `timeoutSeconds?`
+
+Behavior:
+
+- each statement is validated individually with the mutable whitelist
+- the transaction commits only if all statements succeed
+- the transaction is rolled back if any statement fails
+- transactions are scoped to one tool call only
+- `isolationLevel` is optional
+- if `isolationLevel` is omitted, the transaction uses the default SQL Server behavior for the session
+
+Output:
+
+- `database`
+- `isolationLevel`
+- `committed`
+- `statements`
+- `durationMilliseconds`
+
 ### `list_stored_procedures`
 
 Purpose:
@@ -275,6 +305,37 @@ Not supported through `execute_write_query`:
 - free-form `EXEC`
 - arbitrary multi-statement scripts
 - unsupported SQL Server statement families outside the whitelist
+
+## Transaction Policy
+
+Transactional execution is available only through `execute_transaction`.
+
+Why:
+
+- it preserves a strict single-statement contract for `execute_write_query`
+- it avoids keeping transaction state open across multiple MCP calls
+- it lets the server validate each statement before attempting a commit
+
+The first transaction implementation intentionally excludes:
+
+- `UNSAFE PATTERN`
+- `CREATE DATABASE`
+- `ALTER DATABASE`
+- `DROP DATABASE`
+- `BACKUP`
+- `BULK INSERT`
+
+Those statements can still be executed individually through `execute_write_query` when allowed, but not inside `execute_transaction`.
+
+Supported `isolationLevel` values:
+
+- `read_committed`
+- `read_uncommitted`
+- `repeatable_read`
+- `serializable`
+- `snapshot`
+
+`snapshot` may still fail at execution time if the target SQL Server database is not configured to allow snapshot isolation.
 
 ## Stored Procedure Execution Notes
 

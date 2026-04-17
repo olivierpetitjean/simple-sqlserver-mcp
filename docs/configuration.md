@@ -50,6 +50,7 @@ These tools accept `targetDatabase?` at call time:
 
 - `execute_read_query`
 - `execute_write_query`
+- `execute_transaction`
 - `execute_stored_procedure`
 
 This is not an environment variable.
@@ -96,6 +97,7 @@ The filter applies to:
 - schema exploration tools such as `list_tables`, `describe_table`, `search_columns`, `get_table_sample`
 - `execute_read_query`
 - `execute_write_query`
+- `execute_transaction`
 - `list_stored_procedures`
 - `describe_stored_procedure`
 - `execute_stored_procedure`

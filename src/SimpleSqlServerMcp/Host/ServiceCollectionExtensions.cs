@@ -44,6 +44,7 @@ internal static class ServiceCollectionExtensions
             .AddSingleton<ISchemaExplorerService, SchemaExplorerService>()
             .AddSingleton<IQueryExecutionService, QueryExecutionService>()
             .AddSingleton<IMutableQueryExecutionService, MutableQueryExecutionService>()
+            .AddSingleton<ITransactionExecutionService, TransactionExecutionService>()
             .AddSingleton<IStoredProcedureExecutionService, StoredProcedureExecutionService>();
 
         services

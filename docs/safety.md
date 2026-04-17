@@ -1,10 +1,10 @@
 # Safety
 
-## What “Safe” Means Here
+## What "Safe" Means Here
 
 This project targets developer and test databases.
 
-So the goal is not “production security” in the usual sense. The goal is mostly:
+So the goal is not production security in the usual sense. The goal is mostly:
 
 - prevent accidental AI writes in read-only mode
 - make mutable actions explicit
@@ -65,6 +65,51 @@ Not supported in `execute_write_query`:
 - arbitrary multi-statement scripts
 - unsupported SQL Server statement families outside the whitelist
 
+## Transactions
+
+Transactions are supported through:
+
+- `execute_transaction`
+
+This is intentionally separate from `execute_write_query`.
+
+Why:
+
+- `execute_write_query` stays single-statement and easy to reason about
+- transaction scope remains bounded to one MCP call
+- the server does not keep open transaction state between calls
+
+`execute_transaction`:
+
+- validates each statement with the mutable whitelist
+- commits only if all statements succeed
+- rolls back the entire transaction if one statement fails
+
+The current transaction tool intentionally excludes:
+
+- `UNSAFE PATTERN`
+- `CREATE DATABASE`
+- `ALTER DATABASE`
+- `DROP DATABASE`
+- `BACKUP`
+- `BULK INSERT`
+
+Those statements can still run individually through `execute_write_query` when allowed, but not inside `execute_transaction`.
+
+`execute_transaction` also supports an optional `isolationLevel`.
+
+Allowed values:
+
+- `read_committed`
+- `read_uncommitted`
+- `repeatable_read`
+- `serializable`
+- `snapshot`
+
+If `isolationLevel` is omitted, the MCP uses the default SQL Server transaction behavior for the session.
+
+`snapshot` may still fail if the target database is not configured to allow snapshot isolation.
+
 ## Stored Procedures
 
 Stored procedures are not treated as generic mutable SQL.
@@ -93,6 +138,7 @@ It exists because some SQL Server operations are valid only when executed inside
 - `CREATE PROCEDURE`
 - `CREATE FUNCTION`
 - `CREATE TRIGGER`
+- transaction execution against a specific database
 - stored procedure execution against a specific database
 
 It also does not bypass database filtering. If the resolved database is excluded or not present in `MCP_SQLSERVER_ALLOWED_DATABASES`, execution is rejected before SQL runs.

@@ -26,6 +26,7 @@ Unit tests cover:
 - mutable validator behavior
 - unsafe-pattern validation
 - service-level guardrails
+- transactional execution guardrails
 - database allow-list behavior
 - installer environment-variable payload generation
 - installer config merge behavior for supported clients
@@ -108,6 +109,7 @@ Read-only integration tests cover:
 Mutable integration tests cover:
 
 - `execute_write_query`
+- `execute_transaction`
 - `execute_stored_procedure`
 - mode guardrails
 - unsafe override behavior
@@ -129,6 +131,15 @@ Stored procedure execution coverage includes:
 - output parameters
 - return value
 - no-result-set procedures
+
+Transactional execution coverage includes:
+
+- commit of multiple statements
+- rollback on failure
+- read-only mode rejection
+- rejection of transaction-incompatible statement families
+- support for the documented isolation levels
+- `snapshot` with explicit database enablement in the test database
 
 ## Commands
 

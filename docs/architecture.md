@@ -75,6 +75,7 @@ Examples:
 - schema exploration
 - read-query execution
 - write-query execution
+- transactional execution
 - stored procedure execution
 
 These services know SQL Server behavior but do not know MCP transport details.
@@ -94,6 +95,8 @@ Contains SQL validation logic:
 - read-only validation
 - mutable validation
 - unsafe pattern overrides
+
+Transactional execution reuses mutable validation statement by statement rather than introducing a second free-form SQL execution surface.
 
 ### `Models/`
 
